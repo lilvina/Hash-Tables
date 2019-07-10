@@ -9,6 +9,9 @@ class LinkedPair:
         self.value = value
         self.next = None
 
+    def __str__(self):
+        return f'{self.key}, {self.value}'
+
 
 # '''
 # Fill this in
@@ -17,14 +20,19 @@ class LinkedPair:
 # '''
 class HashTable:
     def __init__(self, capacity):
-        pass
+        self.capacity = capacity
+        self.count = 0
+        self.storage = [None] * capacity
 
 
 # '''
 # Research and implement the djb2 hash function
 # '''
 def hash(string, max):
-    pass
+    hash = 5381
+    for s in string:
+        hash = (( hash << 5 ) + hash) + ord(s)
+    return hash % max
 
 
 # '''
@@ -32,8 +40,27 @@ def hash(string, max):
 
 # Hint: Used the LL to handle collisions
 # '''
+def recursive(node):
+    while node.next != None:
+        node = node.next
+        recursive(node)
+
 def hash_table_insert(hash_table, key, value):
-    pass
+    index_value = hash(key, hash_table.capacity)
+    insert = LinkedPair(key, value)
+    rootNode = hash_table.storage[index_value]
+
+    if rootNode is None:
+        print("if: ", hash_table.storage[index_value])
+        hash_table.storage[index_value] = insert
+        print("if (after): ", hash_table.storage[index_value])
+        return True
+    else:
+        print("else: ", rootNode)
+        recursive(rootNode)
+
+    rootNode.next = insert
+    hash_table.count += 1
 
 
 # '''
@@ -42,7 +69,15 @@ def hash_table_insert(hash_table, key, value):
 # If you try to remove a value that isn't there, print a warning.
 # '''
 def hash_table_remove(hash_table, key):
-    pass
+    val = hash_table.storage[hash(key, hash_table.capacity)]
+
+    if val is None:
+        print("no item removed")
+        return None
+    else:
+        hash_table.storage[hash(key, hash_table.capacity)] = None
+        print("item removed")
+        return
 
 
 # '''
@@ -51,7 +86,13 @@ def hash_table_remove(hash_table, key):
 # Should return None if the key is not found.
 # '''
 def hash_table_retrieve(hash_table, key):
-    pass
+    val = hash_table.storage[hash(key, hash_table.capacity)]
+
+    if val is None:
+        return None
+    else:
+        print(f"retrieve a value: {val.value}")
+        return val.value
 
 
 # '''
@@ -73,7 +114,7 @@ def Testing():
     print(hash_table_retrieve(ht, "line_3"))
 
     old_capacity = len(ht.storage)
-    ht = hash_table_resize(ht)
+    #ht = hash_table_resize(ht)
     new_capacity = len(ht.storage)
 
     print("Resized hash table from " + str(old_capacity)
